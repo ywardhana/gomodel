@@ -48,6 +48,10 @@ func (m *Model) GetEntity() interface{} {
 
 func (m *Model) Find(ID int64) error {
 	m.Where("id = ?", ID)
+	return m.Exec()
+}
+
+func (m *Model) Exec() error {
 	err := m.modelDb.QueryRowx(m.getFullQuery(), m.query.whereParams...).StructScan(m.entity)
 	return err
 }
