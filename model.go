@@ -1,4 +1,4 @@
-package temp1
+package gomodel
 
 import (
 	"strconv"
@@ -48,16 +48,14 @@ func (m *Model) GetEntity() interface{} {
 
 func (m *Model) Find(ID int64) error {
 	m.Where("id = ?", ID)
+	return m.Exec()
+}
+
+func (m *Model) Exec() error {
 	err := m.modelDb.QueryRowx(m.getFullQuery(), m.query.whereParams...).StructScan(m.entity)
 	return err
 }
 
-type Test struct {
-	ID    int    `db:"id"`
-	Value string `db:"value"`
-}
-
-// Where(att = ?, val)
 func (m *Model) Where(query string, args ...interface{}) *Model {
 	m.query.whereClause = "where"
 	m.query.whereClause += " " + query
