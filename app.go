@@ -56,12 +56,6 @@ func (m *Model) Exec() error {
 	return err
 }
 
-type Test struct {
-	ID    int    `db:"id"`
-	Value string `db:"value"`
-}
-
-// Where(att = ?, val)
 func (m *Model) Where(query string, args ...interface{}) *Model {
 	m.query.whereClause = "where"
 	m.query.whereClause += " " + query
