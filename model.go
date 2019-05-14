@@ -1,4 +1,4 @@
-package temp1
+package gomodel
 
 import (
 	"strconv"

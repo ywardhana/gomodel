@@ -1,4 +1,4 @@
-package temp1_test
+package gomodel_test
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/subosito/gotenv"
-	"github.com/ywardhana/temp1"
+	"github.com/ywardhana/gomodel"
 )
 
 var createTableTest = "CREATE TABLE " + dbName + " (" +
@@ -29,10 +29,23 @@ func TestFind(t *testing.T) {
 	db := newMysqlClient()
 	db.MustExec(createTableTest)
 	db.MustExec(insertTableTest)
-	temp1.SetDb(db)
+	gomodel.SetDb(db)
 	entity := Test{}
-	model := temp1.NewModel(dbName, &entity)
+	model := gomodel.NewModel(dbName, &entity)
 	model.Find(1)
+	assert.Equal(t, idTest, entity.ID)
+	assert.Equal(t, valTest, entity.Value)
+	db.MustExec(dropTable)
+}
+
+func TestExec(t *testing.T) {
+	db := newMysqlClient()
+	db.MustExec(createTableTest)
+	db.MustExec(insertTableTest)
+	gomodel.SetDb(db)
+	entity := Test{}
+	model := gomodel.NewModel(dbName, &entity)
+	model.Where("id = ? ", 1).Exec()
 	assert.Equal(t, idTest, entity.ID)
 	assert.Equal(t, valTest, entity.Value)
 	db.MustExec(dropTable)
