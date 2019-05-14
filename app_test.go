@@ -20,8 +20,9 @@ var createTableTest = "CREATE TABLE " + dbName + " (" +
 	") ENGINE = InnoDB DEFAULT CHARSET = utf8"
 
 var idTest = 1
+var valTest = "value1"
 var dbName = "test"
-var insertTableTest = "INSERT INTO " + dbName + " VALUES(" + strconv.Itoa(idTest) + ",\"value1\")"
+var insertTableTest = "INSERT INTO " + dbName + " VALUES(" + strconv.Itoa(idTest) + ",\"" + valTest + "\")"
 var dropTable = "DROP TABLE " + dbName
 
 func TestFind(t *testing.T) {
@@ -32,7 +33,8 @@ func TestFind(t *testing.T) {
 	entity := Test{}
 	model := temp1.NewModel(dbName, &entity)
 	model.Find(1)
-	assert.Equal(t, 1, entity.ID)
+	assert.Equal(t, idTest, entity.ID)
+	assert.Equal(t, valTest, entity.Value)
 	db.MustExec(dropTable)
 }
 
