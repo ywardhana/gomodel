@@ -71,6 +71,18 @@ func (m *Model) Exec() ([]interface{}, error) {
 	return res, err
 }
 
+func (m *Model) Count() (int, error) {
+	rows, err := m.modelDb.Queryx(m.getCountQuery(), m.query.whereParams...)
+	res := 0
+	if err != nil {
+		return res, err
+	}
+	for rows.Next() {
+		rows.Scan(&res)
+	}
+	return res, err
+}
+
 func (m *Model) Where(query string, args ...interface{}) *Model {
 	m.query.whereClause = "where"
 	m.query.whereClause += " " + query
@@ -100,7 +112,15 @@ func (m *Model) Limit(limiter int) *Model {
 }
 
 func (m *Model) getFullQuery() string {
-	res := "select " + m.query.selectAttr + " from " + m.tableName + " " + m.query.whereClause
+	return "select " + m.query.selectAttr + m.getSelectSource()
+}
+
+func (m *Model) getCountQuery() string {
+	return "select count(*)" + m.getSelectSource()
+}
+
+func (m *Model) getSelectSource() string {
+	res := " from " + m.tableName + " " + m.query.whereClause
 	if m.query.limiter != "" {
 		res += " limit " + m.query.limiter
 	}
