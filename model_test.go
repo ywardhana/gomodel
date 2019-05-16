@@ -13,7 +13,7 @@ import (
 	"github.com/ywardhana/gomodel"
 )
 
-var createTableTest = "CREATE TABLE " + dbName + " (" +
+var createTableTest = "CREATE TABLE IF NOT EXISTS " + dbName + " (" +
 	"`id` INT(11) NOT NULL," +
 	"`value` VARCHAR(20) NOT NULL," +
 	"PRIMARY KEY (`id`)" +
@@ -45,7 +45,12 @@ func TestExec(t *testing.T) {
 	gomodel.SetDb(db)
 	entity := Test{}
 	model := gomodel.NewModel(dbName, &entity)
-	model.Where("id = ? ", 1).Exec()
+	res, err := model.Where("id = ? ", 1).Exec()
+	if err != nil {
+		assert.Nil(t, err)
+		return
+	}
+	entity = *(res[0].(*Test))
 	assert.Equal(t, idTest, entity.ID)
 	assert.Equal(t, valTest, entity.Value)
 	db.MustExec(dropTable)

@@ -1,6 +1,7 @@
 package gomodel
 
 import (
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -48,12 +49,26 @@ func (m *Model) GetEntity() interface{} {
 
 func (m *Model) Find(ID int64) error {
 	m.Where("id = ?", ID)
-	return m.Exec()
-}
-
-func (m *Model) Exec() error {
 	err := m.modelDb.QueryRowx(m.getFullQuery(), m.query.whereParams...).StructScan(m.entity)
 	return err
+}
+
+func (m *Model) Exec() ([]interface{}, error) {
+	rows, err := m.modelDb.Queryx(m.getFullQuery(), m.query.whereParams...)
+	res := []interface{}{}
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		var elem = reflect.New(reflect.ValueOf(m.entity).Elem().Type()).Interface()
+
+		if err := rows.StructScan(elem); err != nil {
+			return res, err
+		}
+		res = append(res, elem)
+	}
+	return res, err
 }
 
 func (m *Model) Where(query string, args ...interface{}) *Model {
