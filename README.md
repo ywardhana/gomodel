@@ -2,11 +2,11 @@
 Simple golang model-orm like- module. Implemented for Mysql adapter, using sqlx(`github.com/jmoiron/sqlx`) library.
 
 ## Recent Changes
-### v0.0.1
 Features:
 * Where method
 * Find method
 * Limit method
+* Count method
 
 ## Installation
 ```go get github.com/ywardhana/gomodel```
@@ -37,7 +37,7 @@ model.Where("id = ?", yourDesiredParameter)
 
 /// multiparameter is supported, so you can use where such as model.Where("id = ? and column1 = ?", param1, param2)
 
-/// the result is available at `yourStruct`
+/// if you want the result, execute your query with `Exec()` method after `Where`
 
 ```
 
@@ -46,7 +46,15 @@ model.Where("id = ?", yourDesiredParameter)
 ///// initialization step /////
 model.Where("column1 = ?", yourDesiredParameter).Limit(yourDesiredLimit)
 
-/// the result is available at `yourStruct`
+/// if you want the result, execute your query with `Exec()` method after `Limit`
 
 ```
 
+### Count
+```go
+///// initialization step /////
+countRes, err := model.Where("column1 = ?", yourDesiredParameter).count
+
+/// the countRes is in integer
+
+```
